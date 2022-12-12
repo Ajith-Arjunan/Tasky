@@ -162,7 +162,7 @@ const editTask = (e) => {
     taskDesc.setAttribute("contenteditable", "true");
     taskType.setAttribute("contenteditable", "true");
 
-    // submitButton.setAttribute('onclick',"saveEdit.apply(this, arguments)");
+    submitButton.setAttribute('onclick', "saveEdit.apply(this, arguments)");
 
     submitButton.removeAttribute("data-bs-toggle");
     submitButton.removeAttribute("data-bs-target");
@@ -184,12 +184,45 @@ const saveEdit = (e) => {
     const updatedData = {
         taskTitle: taskTitle.innerHTML,
         taskDesc: taskDesc.innerHTML,
-        taskType: taskType.innerHTML, s
+        taskType: taskType.innerHTML,
     };
     let stateCopy = state.taskList;
 
     stateCopy = stateCopy.map((task) =>
         task.id === targetID
+            ? {
+                id: task.id,
+                title: updatedData.taskTitle,
+                desc: updatedData.taskDesc,
+                type: updatedData.taskType,
+                url: task.url,
+            }
+            : task
+    );
+    state.taskList = stateCopy;
+    updateLocalStorage();
+
+    taskTitle.setAttribute("contenteditable", "false");
+    taskDesc.setAttribute("contenteditable", "false");
+    taskType.setAttribute("contenteditable", "false");
+
+    submitButton.setAttribute("onclick", "openTask.apply(this, arguments)");
+    submitButton.setAttribute("data-bs-toggle", "modal");
+    submitButton.setAttribute("data-bs-target", "#showTask");
+    submitButton.innerHTML = "Open Task";
+
+};
+
+const searchTask = (e) => {
+    if (!e) e = window.event;
+    while (taskContent.firstChild) {
+        taskContent.removeChild(taskContent.firstChild);
+    }
+    const resultData = state.taskList.filter(({ title }) =>
+        title.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    resultData.map((cardData) =>
+        taskContent.insertAdjacentHTML("beforeend", htmlTaskContent(cardData))
     );
 };
 
