@@ -1,2 +1,2 @@
-# tasky-application
-
+# Tasky
+> To track daily activities 
